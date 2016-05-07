@@ -7,17 +7,15 @@ from keras.layers.core import Dense, Dropout, Activation
 from keras.optimizers import RMSprop
 import sys
 sys.path.append("../Pre/scripts/")
-from config import *
+from config import INPUT_DIM, OUTPUT_DIM
 
 
 batch_size = 256
-nb_epoch = 50
+nb_epoch = 60
 
 # load the dictionary
 input = open('../Pre/featdict.pkl', 'rb')
-featnamearray = sPickle.load(input)
-feattypedict = sPickle.load(input)
-featdict = sPickle.load(input)
+featnamearray, feattypedict, featdict = sPickle.load(input)
 input.close()
 
 # load the input features
@@ -67,9 +65,7 @@ model.add(Activation('linear'))
 
 model.summary()
 
-model.compile(loss='mse',
-              optimizer=RMSprop(),
-              metrics=['accuracy'])
+model.compile(loss='mse', optimizer=RMSprop())
 
 X_test_V = number2vector(featnamearray, feattypedict, featdict, X_test_V)
 X_test = np.hstack((X_test_V, X_test_N))
@@ -95,13 +91,12 @@ for i in xrange(nb_epoch):
         X_batch = np.hstack((X_batch_V, X_batch_N))
         Y_batch = Y_train[n * batch_size: eidx]
         lscalar = model.train_on_batch(X_batch, Y_batch)
-        loss = loss + lscalar[0]
+        loss = loss + lscalar
         if (n+1) % 100 == 0:
             print ("batch: %d loss: %f " % (n+1, loss / 100))
             loss = 0
     score = model.evaluate(X_test, Y_test, verbose=0)
     print('Test score:', score[0])
-    print('Test accuracy:', score[1])
 
 json_string = model.to_json()
 open('mlp_architecture.json', 'w').write(json_string)

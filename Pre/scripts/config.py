@@ -12,3 +12,5 @@ OUTPUT_DIM = (MGC_DIM + 1 + LF0_DIM) * 3 +1
 
 nTrain = 493 #first 493 files for training, 10 for testing
 SEED = 1337
+
+REMOVE_SIL = True 
