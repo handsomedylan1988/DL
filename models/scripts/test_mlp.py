@@ -9,9 +9,7 @@ import sPickle
 from tools import number2vector
 
 input = open('../Pre/featdict.pkl', 'rb')
-featnamearray = sPickle.load(input)
-feattypedict = sPickle.load(input)
-featdict = sPickle.load(input)
+featnamearray, feattypedict, featdict = sPickle.load(input)
 input.close()
 
 
@@ -34,13 +32,12 @@ input.close()
 model = model_from_json(open("mlp_architecture.json").read())
 model.load_weights('mlp_weights.h5')
 
-model.compile(loss='mse', optimizer=RMSprop(), metrics=['accuracy'])
+model.compile(loss='mse', optimizer=RMSprop())
 
 X_test_V = number2vector(featnamearray, feattypedict, featdict, X_test_V)
 X_test = np.hstack((X_test_V, X_test_N))
 score = model.evaluate(X_test, Y_test, verbose=0)
-print('Test score:', score[0])
-print('Test accuracy:', score[1])
+print('Test score:', score)
 
 Y_predict = model.predict(X_test, verbose=0)
 Y_predict = (Y_predict * Y_std) + Y_mean
